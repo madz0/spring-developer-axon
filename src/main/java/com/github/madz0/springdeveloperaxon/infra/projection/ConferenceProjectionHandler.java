@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
 @Component
-class ConferenceProjectionHandler {
+public class ConferenceProjectionHandler {
   private final JdbcClient jdbcClient;
 
   ConferenceProjectionHandler(JdbcClient jdbcClient) {

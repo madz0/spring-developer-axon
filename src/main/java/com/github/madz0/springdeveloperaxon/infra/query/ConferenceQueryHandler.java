@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
 @Component
-class ConferenceQueryHandler {
+public class ConferenceQueryHandler {
   private final JdbcClient jdbcClient;
 
   ConferenceQueryHandler(JdbcClient jdbcClient) {

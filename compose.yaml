@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+
+  axon-server:
+    image: axoniq/axonserver:4.6.11
+    container_name: axon-server
+    restart: unless-stopped
+    ports:
+      - "8024:8024"
+      - "8124:8124"
+  postgres:
+    image: postgres:15.2
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=test
+    ports:
+      - "5432:5432"
