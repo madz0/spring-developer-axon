@@ -1,9 +1,9 @@
 package com.github.madz0.springdeveloperaxon.domain.model;
 
-import static com.github.madz0.springdeveloperaxon.domain.util.StringUtils.isEmpty;
-
+import com.github.madz0.springdeveloperaxon.domain.command.CancelConferenceCreationCommand;
 import com.github.madz0.springdeveloperaxon.domain.command.CreateConferenceCommand;
 import com.github.madz0.springdeveloperaxon.domain.event.ConferenceCreatedEvent;
+import com.github.madz0.springdeveloperaxon.domain.event.ConferenceCreationCancelledEvent;
 import org.axonframework.commandhandling.CommandExecutionException;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -15,6 +15,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 public class ConferenceAggregate {
   @AggregateIdentifier private String id;
   private String name;
+  private boolean isCancelled;
 
   @CommandHandler
   public ConferenceAggregate(CreateConferenceCommand ccc) {
@@ -25,12 +26,23 @@ public class ConferenceAggregate {
   }
 
   @EventSourcingHandler
-  public void handler(ConferenceCreatedEvent cce) {
+  public void on(ConferenceCreatedEvent cce) {
     this.id = cce.id();
     this.name = cce.name();
+    this.isCancelled = false;
   }
 
-  public String getName() {
-    return name;
+  // Add a handler for the compensating command
+  @CommandHandler
+  public void handle(CancelConferenceCreationCommand command) {
+    if (isCancelled) {
+      return; // Already cancelled, do nothing.
+    }
+    AggregateLifecycle.apply(new ConferenceCreationCancelledEvent(command.conferenceId()));
+  }
+
+  @EventSourcingHandler
+  public void on(ConferenceCreationCancelledEvent event) {
+    this.isCancelled = true;
   }
 }
